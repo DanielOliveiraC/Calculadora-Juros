@@ -27,9 +27,14 @@ class _CalculadoraJuros extends State {
 
   // Valores de Entrada
   final capitalController = TextEditingController();
+  final capitalController2 = TextEditingController();
   final aplicacaoMensallControler = TextEditingController();
+  final aplicacaoMensallControler2 = TextEditingController();
   final mesesController = TextEditingController();
+  final mesesController2 = TextEditingController();
   final taxaaJurosMesController = TextEditingController();
+  final taxaaJurosMesController2 = TextEditingController();
+  
 
   // Valores Armazenados
   late double capital = 0.0;
@@ -40,9 +45,20 @@ class _CalculadoraJuros extends State {
   late double rendimentoFinal = 0.0;
   late double montante = 0.0;
 
+  late double capital2 = 0.0;
+  late double aplicacaoMensal2 = 0.0;
+  late int meses2 = 0;
+  late double taxaJurosMes2 = 0.0;
+  late double rendimentoMensal2 = 0.0;
+  late double rendimentoFinal2 = 0.0;
+  late double montante2 = 0.0;
+
   // Valores Gerados
   List valorRendimentos = [];
+
   List<String> valores = [];
+  List<String> valores2 = [];
+
   late String dados;
 
 
@@ -78,6 +94,24 @@ class _CalculadoraJuros extends State {
             label: 'Rentabilidade Mês (%)',
           ),
           
+           // Entradas para a Simulação 2
+          _campoTexto(
+            controller: capitalController2,
+            label: 'Investimento inicial (Simulação 2)',
+          ),
+          _campoTexto(
+            controller: aplicacaoMensallControler2,
+            label: 'Aplicação Mensal (Simulação 2)',
+          ),
+          _campoTexto(
+            controller: mesesController2,
+            label: 'Período em meses (Simulação 2)',
+          ),
+          _campoTexto(
+            controller: taxaaJurosMesController2,
+            label: 'Rentabilidade Mês (%) (Simulação 2)',
+          ),
+
           Padding(padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: ElevatedButton(onPressed: _calcularJurosCompostos, child: const Text("Calcular")),
           ),
@@ -134,6 +168,35 @@ class _CalculadoraJuros extends State {
     meses = int.parse(mesesController.text);
     taxaJurosMes = double.parse(taxaaJurosMesController.text) / 100; // Converte para percentual
 
+
+    // Calcula os resultados para a Simulação 1
+    valores.clear();
+    for (int i = 0; i < meses; i++) {
+      rendimentoMensal = capital * taxaJurosMes;
+      rendimentoFinal += rendimentoMensal;
+      montante = capital + rendimentoMensal;
+      capital += rendimentoMensal + aplicacaoMensal;
+      valores.add(rendimentoMensal.toStringAsFixed(2));
+    }
+
+    // Captura os valores para a Simulação 2
+    capital2 = double.parse(capitalController2.text);
+    aplicacaoMensal2 = double.parse(aplicacaoMensallControler2.text);
+    meses2 = int.parse(mesesController2.text);
+    taxaJurosMes2 = double.parse(taxaaJurosMesController2.text) / 100;
+
+    // Calcula os resultados para a Simulação 2
+    valores2.clear();
+    for (int i = 0; i < meses2; i++) {
+      rendimentoMensal2 = capital2 * taxaJurosMes2;
+      rendimentoFinal2 += rendimentoMensal2;
+      montante2 = capital2 + rendimentoMensal2;
+      capital2 += rendimentoMensal2 + aplicacaoMensal2;
+      valores2.add(rendimentoMensal2.toStringAsFixed(2));
+    }
+
+
+
     // Limpa os dados anteriores
     rendimentoFinal = 0.0;
     montante = 0.0;
@@ -154,14 +217,16 @@ class _CalculadoraJuros extends State {
 
     // Atualiza a interface com os novos valores
     Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ResultadoPage(
-        montante: montante,
-        valores: valores,
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultadoPage(
+          montante1: montante,
+          montante2: montante2,
+          valores1: valores,
+          valores2: valores2,
+        ),
       ),
-    ),
-  );
+    );
   }
 }
 
